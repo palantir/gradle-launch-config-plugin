@@ -1,0 +1,29 @@
+plugins {
+    id 'groovy'
+    id 'eclipse'
+    id 'idea'
+    id 'com.gradle.plugin-publish' version '0.9.2'
+    id 'com.palantir.git-version' version '0.4.1'
+    id 'nebula.maven-publish' version '4.4.4'
+    id 'nebula.info' version '3.0.3'
+    id 'nebula.javadoc-jar' version '4.2.2'
+}
+
+group 'com.palantir.launchconfig'
+version '0.1.0'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile gradleApi()
+
+    testCompile gradleTestKit()
+
+    testCompile 'com.netflix.nebula:nebula-test:4.0.0'
+    testCompile 'com.palantir.gradle.javadist:gradle-java-distribution:0.5.2'
+    testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
+        exclude module: 'groovy-all'
+    }
+}
