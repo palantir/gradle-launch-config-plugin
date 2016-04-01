@@ -26,6 +26,6 @@ class LaunchConfigPluginProjectSpec extends PluginProjectSpec {
         project.evaluate()
 
         then:
-        project.tasks.getByName("ideaWorkspace").dependsOn.contains(IdeaLaunchConfigTask.TASK_NAME)
+        project.tasks.getByName("ideaWorkspace").dependsOn.any { it instanceof IdeaLaunchConfigTask }
     }
 }

@@ -35,7 +35,7 @@ class LaunchConfigPlugin implements Plugin<Project> {
                 description = "Generates IDEA run configurations for all the JavaExec tasks in your project."
             })
 
-            project.rootProject.tasks.getByName("ideaWorkspace").dependsOn.add(IdeaLaunchConfigTask.TASK_NAME)
+            project.rootProject.tasks.getByName("ideaWorkspace").dependsOn.add(ideaTask)
         }
     }
 }
