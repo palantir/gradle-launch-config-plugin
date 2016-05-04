@@ -1,3 +1,4 @@
+apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'nebula.info'
 apply plugin: 'nebula.javadoc-jar'
@@ -25,3 +26,24 @@ bintrayUpload.onlyIf {
 }
 
 bintrayUpload.dependsOn 'generatePomFileForNebulaPublication', 'build'
+
+
+pluginBundle {
+    website = 'https://github.com/palantir/gradle-launch-config-plugin'
+    vcsUrl = 'https://github.com/palantir/gradle-launch-config-plugin'
+    description = 'A Gradle Plugin that creates .launch files for Eclipse and Run Configurations for IntelliJ for your project\'s JavaExec tasks.'
+    tags = ['idea', 'eclipse', 'launch', 'run', 'javaexec']
+
+    plugins {
+        launchConfig {
+            id = 'com.palantir.launch-config'
+            displayName = 'Launch Config'
+        }
+    }
+}
+
+publishPlugins.onlyIf {
+    project.version ==~ /\d+\.\d+\.\d+/
+}
+
+publishPlugins.dependsOn 'generatePomFileForNebulaPublication', 'build'
