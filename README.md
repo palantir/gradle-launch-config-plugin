@@ -7,8 +7,8 @@ A Gradle Plugin that creates `.launch` files for Eclipse and Run Configurations 
 
 Usage
 -----
-1. Apply the plugin.
-2. Call the respective IDE commands (i.e. `./gradlew idea` or `./gradlew eclipse`).
+1. [Apply the plugin](https://plugins.gradle.org/plugin/com.palantir.launch-config)
+2. Call the respective IDE commands (i.e. `./gradlew idea` or `./gradlew eclipse`)
 
 
 Tasks
