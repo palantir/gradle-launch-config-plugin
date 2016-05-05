@@ -41,14 +41,18 @@ class IdeaLaunchConfigTask extends DefaultTask {
             }
 
             project.tasks.withType(JavaExec) { javaExec ->
-                String runConfigName = determineRunConfigName(javaExec)
 
-                if (runManager.find { it.@name == runConfigName }) {
-                    logger.debug("Skipping generation of '%s' since it already exists.", runConfigName)
+                if (shouldGenerate(javaExec.name)) {
+                    String runConfigName = determineRunConfigName(javaExec)
 
+                    if (runManager.find { it.@name == runConfigName }) {
+                        logger.debug("Skipping generation of %s since it already exists.", runConfigName)
+                    } else {
+                        logger.debug("Generating run configuration for %s.", runConfigName)
+                        appendRunConfig(runManager, javaExec)
+                    }
                 } else {
-                    logger.debug("Generating run configuration for '%s'.", runConfigName)
-                    appendRunConfig(runManager, javaExec)
+                    logger.debug("Skipping generation of %s since it is excluded in the launchConfig.", javaExec.name)
                 }
             }
         }
@@ -74,5 +78,16 @@ class IdeaLaunchConfigTask extends DefaultTask {
 
     String determineRunConfigName(JavaExec javaExec) {
         return "${project.name}-${javaExec.name}"
+    }
+
+    boolean shouldGenerate(String taskName) {
+        LaunchConfigExtension extension = this.project.extensions.getByType(LaunchConfigExtension)
+        Set<List> includedTasks = extension.getIncludedTasks()
+        Set<List> excludedTasks = extension.getExcludedTasks()
+
+        // 1. if includeTasks is empty, all tasks are included
+        // 2. if includeTasks is not empty, only the specified tasks are included
+        // 3. any tasks specified by excludedTasks are excluded from the generation
+        return ((includedTasks.isEmpty() || includedTasks.contains(taskName)) && !excludedTasks.contains(taskName));
     }
 }

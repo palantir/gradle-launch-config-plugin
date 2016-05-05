@@ -1,3 +1,11 @@
+# Eclipse
+.classpath
+.checkstyle
+.factorypath
+.project
+.settings
+bin/
+
 # IDEA
 *.iml
 *.ipr

@@ -165,6 +165,124 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         fileExists("${projectName}-otherRun.launch")
     }
 
+    def "generates launch file using 'includedTasks' config"() {
+        setup:
+        writeHelloWorld("com.testing")
+
+        buildFile << """
+            apply plugin: 'java'
+            apply plugin: 'eclipse'
+            apply plugin: 'com.palantir.launch-config'
+
+            task runDev(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task otherRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            launchConfig {
+                includedTasks 'runDev'
+            }
+
+        """.stripIndent()
+
+        when:
+        ExecutionResult result = runTasksSuccessfully("eclipse")
+
+        then:
+        result.success
+
+        fileExists("${projectName}-runDev.launch")
+        !fileExists("${projectName}-otherRun.launch")
+    }
+
+    def "generates launch file using 'excludedTasks' config"() {
+        setup:
+        writeHelloWorld("com.testing")
+
+        buildFile << """
+            apply plugin: 'java'
+            apply plugin: 'eclipse'
+            apply plugin: 'com.palantir.launch-config'
+
+            task runDev(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task otherRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            launchConfig {
+                excludedTasks 'runDev'
+            }
+
+        """.stripIndent()
+
+        when:
+        ExecutionResult result = runTasksSuccessfully("eclipse")
+
+        then:
+        result.success
+
+        !fileExists("${projectName}-runDev.launch")
+        fileExists("${projectName}-otherRun.launch")
+    }
+
+    def "generates launch file using both includedTasks and excludedTasks config"() {
+        setup:
+        writeHelloWorld("com.testing")
+
+        buildFile << """
+            apply plugin: 'java'
+            apply plugin: 'eclipse'
+            apply plugin: 'com.palantir.launch-config'
+
+            task runDev(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task otherRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task ignoredRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task otherIgnoredRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            launchConfig {
+                includedTasks 'runDev', 'otherRun'
+                excludedTasks 'otherRun'
+            }
+
+        """.stripIndent()
+
+        when:
+        ExecutionResult result = runTasksSuccessfully("eclipse")
+
+        then:
+        result.success
+
+        fileExists("${projectName}-runDev.launch")
+        !fileExists("${projectName}-otherRun.launch")
+        !fileExists("${projectName}-ignoredRun.launch")
+        !fileExists("${projectName}-otherIgnoredRun.launch")
+    }
+
     def "override existing launch files"() {
         setup:
         writeHelloWorld("com.testing")
@@ -199,7 +317,6 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
     def "cleanEclipse should delete the file"() {
         setup:
         writeHelloWorld("com.testing")
-        createFile('runDev.launch') << "original content"
 
         buildFile << """
             apply plugin: 'java'

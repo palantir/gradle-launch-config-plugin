@@ -24,9 +24,12 @@ import org.gradle.plugins.ide.idea.IdeaPlugin
 class LaunchConfigPlugin implements Plugin<Project> {
 
     public static final String GROUP_NAME = "Launch Config"
+    public static final String LAUNCH_EXTENSION = "launchConfig"
 
     @Override
     void apply(Project project) {
+
+        LaunchConfigExtension extension = project.extensions.create(LAUNCH_EXTENSION, LaunchConfigExtension)
         project.plugins.withType(EclipsePlugin) {
             EclipseLaunchConfigTask eclipseTask = project.tasks.create(
                     EclipseLaunchConfigTask.TASK_NAME,
