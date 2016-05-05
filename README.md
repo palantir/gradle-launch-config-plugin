@@ -1,6 +1,7 @@
 gradle-launch-config-plugin
 ===========================
 [![Circle CI](https://circleci.com/gh/palantir-baseline/gradle-launch-config-plugin.svg?style=shield)](https://circleci.com/gh/palantir-baseline/gradle-launch-config-plugin)
+[![Coverage Status](https://coveralls.io/repos/github/palantir-baseline/gradle-launch-config-plugin/badge.svg?branch=develop)](https://coveralls.io/github/palantir-baseline/gradle-launch-config-plugin?branch=develop)
 
 A Gradle Plugin that creates `.launch` files for Eclipse and Run Configurations for IntelliJ for your project's
 `JavaExec` tasks.
