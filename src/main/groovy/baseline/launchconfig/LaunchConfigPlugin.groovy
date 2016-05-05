@@ -1,4 +1,4 @@
-package com.palantir.launchconfig
+package baseline.launchconfig
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project

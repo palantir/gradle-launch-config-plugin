@@ -1,4 +1,4 @@
-package com.palantir.launchconfig
+package baseline.launchconfig
 
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
@@ -24,7 +24,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'idea'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -66,7 +66,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'idea'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -104,7 +104,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         addSubproject(subProjectName, """
             apply plugin: 'java'
             apply plugin: 'idea'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
