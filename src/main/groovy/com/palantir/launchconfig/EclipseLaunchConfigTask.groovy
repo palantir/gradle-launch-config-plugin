@@ -15,16 +15,22 @@ class EclipseLaunchConfigTask extends DefaultTask {
 
     void setup() {
         this.project.tasks.withType(JavaExec) { javaExec ->
-            Path launchFile = Paths.get("${project.projectDir}/${project.name}-${javaExec.name}.launch")
-            this.outputs.file(launchFile.toString())
+            if (shouldGenerate(javaExec.name)) {
+                Path launchFile = Paths.get("${project.projectDir}/${project.name}-${javaExec.name}.launch")
+                this.outputs.file(launchFile.toString())
+            }
         }
     }
 
     @TaskAction
     void generate() {
         this.project.tasks.withType(JavaExec) { javaExec ->
-            logger.debug("Generating launch file for '%s'.", javaExec.name)
-            writeLaunchFile(javaExec)
+            if (shouldGenerate(javaExec.name)) {
+                logger.debug("Generating launch file for %s.", javaExec.name)
+                writeLaunchFile(javaExec)
+            } else {
+                logger.debug("Skipping generation of %s since it is excluded in the launchConfig.", javaExec.name)
+            }
         }
     }
 
@@ -65,5 +71,16 @@ class EclipseLaunchConfigTask extends DefaultTask {
         Path launchFile = Paths.get("${project.projectDir}/${project.name}-${javaExec.name}.launch")
         String xmlString = writer.toString() + "\n"
         Files.write(launchFile, xmlString.getBytes("UTF-8")).toFile()
+    }
+
+    boolean shouldGenerate(String taskName) {
+        LaunchConfigExtension extension = this.project.extensions.getByType(LaunchConfigExtension)
+        Set<List> includedTasks = extension.getIncludedTasks()
+        Set<List> excludedTasks = extension.getExcludedTasks()
+
+        // 1. if includeTasks is empty, all tasks are included
+        // 2. if includeTasks is not empty, only the specified tasks are included
+        // 3. any tasks specified by excludedTasks are excluded from the generation
+        return ((includedTasks.isEmpty() || includedTasks.contains(taskName)) && !excludedTasks.contains(taskName));
     }
 }

@@ -58,7 +58,6 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         runConfig.module.any { it.@name == this.projectName }
     }
 
-
     def "generates multiple run configs"() {
         setup:
         writeHelloWorld("com.testing")
@@ -77,6 +76,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 classpath project.sourceSets.main.runtimeClasspath
                 main 'com.testing.HelloWorld'
             }
+
         """.stripIndent()
 
         when:
@@ -94,6 +94,147 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         runManager.configuration.any { it.@name == "${projectName}-runDev" }
         runManager.configuration.any { it.@name == "${projectName}-otherRun" }
+		!runManager.configuration.any { it.@name == "${projectName}-ignoredRun" }
+		!runManager.configuration.any { it.@name == "${projectName}-otherIgnoredRun" }
+    }
+
+    def "generates launch file using 'includedTasks' config"() {
+        setup:
+        writeHelloWorld("com.testing")
+
+        buildFile << """
+            apply plugin: 'java'
+            apply plugin: 'idea'
+            apply plugin: 'com.palantir.launch-config'
+
+            task runDev(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task otherRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            launchConfig {
+                includedTasks 'runDev'
+            }
+
+        """.stripIndent()
+
+        when:
+        ExecutionResult result = runTasksSuccessfully("idea")
+
+        then:
+        result.success
+
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        runManager.configuration.any { it.@name == "${projectName}-runDev" }
+        !runManager.configuration.any { it.@name == "${projectName}-otherRun" }
+    }
+
+    def "generates launch file using 'excludedTasks' config"() {
+        setup:
+        writeHelloWorld("com.testing")
+
+        buildFile << """
+            apply plugin: 'java'
+            apply plugin: 'idea'
+            apply plugin: 'com.palantir.launch-config'
+
+            task runDev(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task otherRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            launchConfig {
+                excludedTasks 'runDev'
+            }
+
+        """.stripIndent()
+
+        when:
+        ExecutionResult result = runTasksSuccessfully("idea")
+
+        then:
+        result.success
+
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        !runManager.configuration.any { it.@name == "${projectName}-runDev" }
+        runManager.configuration.any { it.@name == "${projectName}-otherRun" }
+    }
+
+    def "generates launch file using both includedTasks and excludedTasks config"() {
+        setup:
+        writeHelloWorld("com.testing")
+
+        buildFile << """
+            apply plugin: 'java'
+            apply plugin: 'idea'
+            apply plugin: 'com.palantir.launch-config'
+
+            task runDev(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task otherRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task ignoredRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task otherIgnoredRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            launchConfig {
+                includedTasks 'runDev', 'otherRun'
+                excludedTasks 'otherRun'
+            }
+
+        """.stripIndent()
+
+        when:
+        ExecutionResult result = runTasksSuccessfully("idea")
+
+        then:
+        result.success
+
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        runManager.configuration.any { it.@name == "${projectName}-runDev" }
+        !runManager.configuration.any { it.@name == "${projectName}-otherRun" }
+        !runManager.configuration.any { it.@name == "${projectName}-ignoredRun" }
+        !runManager.configuration.any { it.@name == "${projectName}-otherIgnoredRun" }
     }
 
     def "idea works with sub projects"() {
@@ -115,6 +256,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 classpath project.sourceSets.main.runtimeClasspath
                 main 'com.testing.HelloWorld'
             }
+
         """.stripIndent())
 
         buildFile << """
