@@ -172,7 +172,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
