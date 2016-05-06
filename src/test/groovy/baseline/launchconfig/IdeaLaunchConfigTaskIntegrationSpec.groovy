@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.palantir.launchconfig
+package baseline.launchconfig
 
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 import org.junit.Rule
 import org.junit.rules.TestName
 
-class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
+class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
     @Rule
     TestName testName = new TestName()
@@ -39,8 +39,8 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         String main = "com.testing.HelloWorld"
         buildFile << """
             apply plugin: 'java'
-            apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'idea'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -52,97 +52,36 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("eclipse")
+        ExecutionResult result = runTasksSuccessfully("idea")
 
         then:
         result.success
 
-        String launchFilename = "${projectName}-runDev.launch"
+        String launchFilename = "${projectName}.iws"
         fileExists(launchFilename)
 
         def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
 
-        xml.stringAttribute.any {
-            it.@key == "org.eclipse.jdt.launching.MAIN_TYPE" && it.@value == main
-        }
-        xml.stringAttribute.any {
-            it.@key == "org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" && it.@value == "server dev/conf/server.yml"
-        }
+        def runConfig = runManager.configuration.findResult { it.@name == "${projectName}-runDev" ? it : null }
+        runConfig != null
 
-        xml.stringAttribute.any {
-            it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value == "-server -client"
-        }
-
-        xml.stringAttribute.any {
-            it.@key == "org.eclipse.jdt.launching.PROJECT_ATTR" && it.@value == this.projectName
-        }
-
-        xml.stringAttribute.any {
-            it.@key == "org.eclipse.jdt.launching.WORKING_DIRECTORY" && it.@value == "/"
-        }
+        runConfig.option.any { it.@name == "MAIN_CLASS_NAME" && it.@value == main }
+        runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value == "-server -client" }
+        runConfig.option.any { it.@name == "PROGRAM_PARAMETERS" && it.@value == "server dev/conf/server.yml" }
+        runConfig.option.any { it.@name == "WORKING_DIRECTORY" && it.@value == "/" }
+        runConfig.module.any { it.@name == this.projectName }
     }
 
-    def "do not set WORKING_DIRECTORY if not defined in JavaExec"() {
+    def "generates multiple run configs"() {
         setup:
         writeHelloWorld("com.testing")
 
         buildFile << """
             apply plugin: 'java'
-            apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
-
-            task runDev(type: JavaExec) {
-                classpath project.sourceSets.main.runtimeClasspath
-                main 'com.testing.HelloWorld'
-            }
-        """.stripIndent()
-
-        when:
-        ExecutionResult result = runTasksSuccessfully("eclipse")
-
-        then:
-        result.success
-
-        fileExists("${projectName}-runDev.launch")
-        def xml = new XmlSlurper().parseText(file("${projectName}-runDev.launch").text)
-        !xml.stringAttribute.any { it.@key == "org.eclipse.jdt.launching.WORKING_DIRECTORY" }
-    }
-
-    def "do not set WORKING_DIRECTORY if set to project directory"() {
-        setup:
-        writeHelloWorld("com.testing")
-
-        buildFile << """
-            apply plugin: 'java'
-            apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
-
-            task runDev(type: JavaExec) {
-                classpath project.sourceSets.main.runtimeClasspath
-                main 'com.testing.HelloWorld'
-                workingDir '${projectDir}'
-            }
-        """.stripIndent()
-
-        when:
-        ExecutionResult result = runTasksSuccessfully("eclipse")
-
-        then:
-        result.success
-
-        fileExists("${projectName}-runDev.launch")
-        def xml = new XmlSlurper().parseText(file("${projectName}-runDev.launch").text)
-        !xml.stringAttribute.any { it.@key == "org.eclipse.jdt.launching.WORKING_DIRECTORY" }
-    }
-
-    def "generates multiple launch files"() {
-        setup:
-        writeHelloWorld("com.testing")
-
-        buildFile << """
-            apply plugin: 'java'
-            apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'idea'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -153,16 +92,26 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 classpath project.sourceSets.main.runtimeClasspath
                 main 'com.testing.HelloWorld'
             }
+
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("eclipse")
+        ExecutionResult result = runTasksSuccessfully("idea")
 
         then:
         result.success
 
-        fileExists("${projectName}-runDev.launch")
-        fileExists("${projectName}-otherRun.launch")
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        runManager.configuration.any { it.@name == "${projectName}-runDev" }
+        runManager.configuration.any { it.@name == "${projectName}-otherRun" }
+		!runManager.configuration.any { it.@name == "${projectName}-ignoredRun" }
+		!runManager.configuration.any { it.@name == "${projectName}-otherIgnoredRun" }
     }
 
     def "generates launch file using 'includedTasks' config"() {
@@ -171,8 +120,8 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         buildFile << """
             apply plugin: 'java'
-            apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'idea'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -191,13 +140,20 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("eclipse")
+        ExecutionResult result = runTasksSuccessfully("idea")
 
         then:
         result.success
 
-        fileExists("${projectName}-runDev.launch")
-        !fileExists("${projectName}-otherRun.launch")
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        runManager.configuration.any { it.@name == "${projectName}-runDev" }
+        !runManager.configuration.any { it.@name == "${projectName}-otherRun" }
     }
 
     def "generates launch file using 'excludedTasks' config"() {
@@ -206,8 +162,8 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         buildFile << """
             apply plugin: 'java'
-            apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'idea'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -226,13 +182,20 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("eclipse")
+        ExecutionResult result = runTasksSuccessfully("idea")
 
         then:
         result.success
 
-        !fileExists("${projectName}-runDev.launch")
-        fileExists("${projectName}-otherRun.launch")
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        !runManager.configuration.any { it.@name == "${projectName}-runDev" }
+        runManager.configuration.any { it.@name == "${projectName}-otherRun" }
     }
 
     def "generates launch file using both includedTasks and excludedTasks config"() {
@@ -241,8 +204,8 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         buildFile << """
             apply plugin: 'java'
-            apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'idea'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -272,26 +235,33 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("eclipse")
+        ExecutionResult result = runTasksSuccessfully("idea")
 
         then:
         result.success
 
-        fileExists("${projectName}-runDev.launch")
-        !fileExists("${projectName}-otherRun.launch")
-        !fileExists("${projectName}-ignoredRun.launch")
-        !fileExists("${projectName}-otherIgnoredRun.launch")
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        runManager.configuration.any { it.@name == "${projectName}-runDev" }
+        !runManager.configuration.any { it.@name == "${projectName}-otherRun" }
+        !runManager.configuration.any { it.@name == "${projectName}-ignoredRun" }
+        !runManager.configuration.any { it.@name == "${projectName}-otherIgnoredRun" }
     }
 
-    def "override existing launch files"() {
+    def "idea works with sub projects"() {
         setup:
+        String subProjectName = "test-sub-project"
         writeHelloWorld("com.testing")
-        createFile('runDev.launch') << "original content"
 
-        buildFile << """
+        addSubproject(subProjectName, """
             apply plugin: 'java'
-            apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
+            apply plugin: 'idea'
+            apply plugin: 'baseline.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -302,45 +272,27 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 classpath project.sourceSets.main.runtimeClasspath
                 main 'com.testing.HelloWorld'
             }
-        """.stripIndent()
 
-        when:
-        ExecutionResult result = runTasksSuccessfully("eclipse")
-
-        then:
-        result.success
-
-        fileExists("${projectName}-runDev.launch")
-        file("${projectName}-runDev.launch").text != "original content"
-    }
-
-    def "cleanEclipse should delete the file"() {
-        setup:
-        writeHelloWorld("com.testing")
+        """.stripIndent())
 
         buildFile << """
-            apply plugin: 'java'
-            apply plugin: 'eclipse'
-            apply plugin: 'com.palantir.launch-config'
-
-            task runDev(type: JavaExec) {
-                classpath project.sourceSets.main.runtimeClasspath
-                main 'com.testing.HelloWorld'
-            }
-
-            task otherRun(type: JavaExec) {
-                classpath project.sourceSets.main.runtimeClasspath
-                main 'com.testing.HelloWorld'
-            }
+            apply plugin: 'idea'
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("eclipse", "cleanEclipse")
+        ExecutionResult result = runTasksSuccessfully("idea")
 
         then:
         result.success
 
-        !fileExists("${projectName}-runDev.launch")
-        !fileExists("${projectName}-otherRun.launch")
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        runManager.configuration.any { it.@name == "${subProjectName}-runDev" }
+        runManager.configuration.any { it.@name == "${subProjectName}-otherRun" }
     }
 }

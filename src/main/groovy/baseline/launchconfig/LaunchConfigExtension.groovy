@@ -1,4 +1,4 @@
-package com.palantir.launchconfig
+package baseline.launchconfig
 
 class LaunchConfigExtension {
     private Set<String> includedTasks = [] as Set
