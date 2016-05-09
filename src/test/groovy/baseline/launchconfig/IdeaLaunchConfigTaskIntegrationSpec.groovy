@@ -110,8 +110,6 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         runManager.configuration.any { it.@name == "${projectName}-runDev" }
         runManager.configuration.any { it.@name == "${projectName}-otherRun" }
-		!runManager.configuration.any { it.@name == "${projectName}-ignoredRun" }
-		!runManager.configuration.any { it.@name == "${projectName}-otherIgnoredRun" }
     }
 
     def "generates launch file using 'includedTasks' config"() {
