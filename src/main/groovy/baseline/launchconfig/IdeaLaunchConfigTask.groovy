@@ -46,13 +46,13 @@ class IdeaLaunchConfigTask extends DefaultTask {
                     String runConfigName = determineRunConfigName(javaExec)
 
                     if (runManager.find { it.@name == runConfigName }) {
-                        logger.debug("Skipping generation of %s since it already exists.", runConfigName)
+                        logger.debug("Skipping generation of {} since it already exists.", runConfigName)
                     } else {
-                        logger.debug("Generating run configuration for %s.", runConfigName)
+                        logger.debug("Generating run configuration for {}.", runConfigName)
                         appendRunConfig(runManager, javaExec)
                     }
                 } else {
-                    logger.debug("Skipping generation of %s since it is excluded in the launchConfig.", javaExec.name)
+                    logger.debug("Skipping generation of {} since it is excluded in the launchConfig.", javaExec.name)
                 }
             }
         }
