@@ -42,10 +42,10 @@ class EclipseLaunchConfigTask extends DefaultTask {
     void generate() {
         this.project.tasks.withType(JavaExec) { javaExec ->
             if (shouldGenerate(javaExec.name)) {
-                logger.debug("Generating launch file for %s.", javaExec.name)
+                logger.debug("Generating launch file for {}.", javaExec.name)
                 writeLaunchFile(javaExec)
             } else {
-                logger.debug("Skipping generation of %s since it is excluded in the launchConfig.", javaExec.name)
+                logger.debug("Skipping generation of {} since it is excluded in the launchConfig.", javaExec.name)
             }
         }
     }
