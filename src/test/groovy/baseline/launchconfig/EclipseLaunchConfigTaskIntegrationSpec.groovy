@@ -46,7 +46,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 classpath project.sourceSets.main.runtimeClasspath
                 main '${main}'
                 args('server', 'dev/conf/server.yml')
-                jvmArgs('-server', '-client')
+                jvmArgs('-server', '-client', '-Ddw.assets')
                 workingDir '/'
             }
         """.stripIndent()
@@ -70,7 +70,11 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         }
 
         xml.stringAttribute.any {
-            it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value == "-server -client"
+            it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value.toString().indexOf("-server -client") > -1
+        }
+
+        xml.stringAttribute.any {
+            it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value.toString().indexOf("-Ddw.assets") > -1
         }
 
         xml.stringAttribute.any {
