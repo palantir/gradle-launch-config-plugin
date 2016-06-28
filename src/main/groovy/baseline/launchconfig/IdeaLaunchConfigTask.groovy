@@ -62,7 +62,7 @@ class IdeaLaunchConfigTask extends DefaultTask {
         runManager.appendNode('configuration', [default: 'false', name: determineRunConfigName(javaExec), type: 'Application', factoryName: 'Application'], [
                 new Node(null, 'extension', [name: 'coverage', enabled: 'false', merge: 'false', runner: 'idea']),
                 new Node(null, 'option', [name: 'MAIN_CLASS_NAME', value: javaExec.main]),
-                new Node(null, 'option', [name: 'VM_PARAMETERS', value: javaExec.jvmArgs.join(" ")]),
+                new Node(null, 'option', [name: 'VM_PARAMETERS', value: javaExec.allJvmArgs.join(" ")]),
                 new Node(null, 'option', [name: 'PROGRAM_PARAMETERS', value: javaExec.args.join(" ")]),
                 new Node(null, 'option', [name: 'WORKING_DIRECTORY', value: javaExec.workingDir]),
                 new Node(null, 'option', [name: 'ALTERNATIVE_JRE_PATH_ENABLED', value: 'false']),

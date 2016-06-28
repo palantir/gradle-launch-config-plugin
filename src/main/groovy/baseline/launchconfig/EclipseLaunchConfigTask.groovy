@@ -71,7 +71,7 @@ class EclipseLaunchConfigTask extends DefaultTask {
 
             stringAttribute(
                     key: "org.eclipse.jdt.launching.VM_ARGUMENTS",
-                    value: javaExec.jvmArgs.join(" "))
+                    value: javaExec.allJvmArgs.join(" "))
 
             stringAttribute(
                     key: "org.eclipse.jdt.launching.PROJECT_ATTR",
