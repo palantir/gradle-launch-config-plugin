@@ -1,6 +1,7 @@
 gradle-launch-config-plugin
 ===========================
-[![Circle CI](https://circleci.com/gh/palantir-baseline/gradle-launch-config-plugin.svg?style=shield)](https://circleci.com/gh/palantir-baseline/gradle-launch-config-plugin)
+[![CircleCI](https://circleci.com/gh/palantir/gradle-launch-config-plugin.svg?style=svg)](https://circleci.com/gh/palantir/gradle-launch-config-plugin)
+[ ![Download](https://api.bintray.com/packages/palantir/releases/gradle-launch-config-plugin/images/download.svg) ](https://bintray.com/palantir/releases/gradle-launch-config-plugin/_latestVersion)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/palantir-baseline/gradle-launch-config-plugin/develop/LICENSE)
 
 A Gradle Plugin that creates `.launch` files for Eclipse and Run Configurations for IntelliJ for your project's
@@ -8,23 +9,46 @@ A Gradle Plugin that creates `.launch` files for Eclipse and Run Configurations 
 
 Usage
 -----
-1. [Apply the plugin](https://plugins.gradle.org/plugin/com.palantir.launch-config)
+1. Apply the plugin
+
+    ```
+    buildscript {
+      repositories {
+        maven {
+          url "https://plugins.gradle.org/m2/"
+        }
+      }
+      dependencies {
+        classpath "gradle.plugin.com.palantir:gradle-launch-config-plugin:0.4.1"
+      }
+    }
+
+    apply plugin: "com.palantir.launch-config"
+    ```
+
+    Alternatively:
+
+    ```
+    plugins {
+      id "com.palantir.launch-config" version "0.4.1"
+    }
+    ```
 2. Call the respective IDE commands (i.e. `./gradlew idea` or `./gradlew eclipse`)
 3. Optional. You can add the `launchConfig` block to specify the `JavaExec` tasks to be used to generate the `.launch`
 files for Eclipse and run configurations for IntelliJ.
 
-```
-launchConfig {
-    excludedTasks 'run'
-}
-```
+    ```
+    launchConfig {
+        excludedTasks 'run'
+    }
+    ```
 
-The `launchConfig` block offers the following options:
- * (optional) `includedTasks` a set of `JavaExec` tasks to be used by the plugin to generate the `.launch` files for
- Eclipse and the run configurations for IntelliJ. If it not specified, all `JavaExec` tasks are included except
- for the ones specified in `excludedTasks`.
- * (optional) `excludedTasks` a set of `JavaExec` tasks that are excluded from the launch file or the run configuration
- creation.
+    The `launchConfig` block offers the following options:
+     * (optional) `includedTasks` a set of `JavaExec` tasks to be used by the plugin to generate the `.launch` files for
+     Eclipse and the run configurations for IntelliJ. If it not specified, all `JavaExec` tasks are included except
+     for the ones specified in `excludedTasks`.
+     * (optional) `excludedTasks` a set of `JavaExec` tasks that are excluded from the launch file or the run configuration
+     creation.
 
 Tasks
 -----
