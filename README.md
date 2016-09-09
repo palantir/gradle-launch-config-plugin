@@ -8,7 +8,7 @@ A Gradle Plugin that creates `.launch` files for Eclipse and Run Configurations 
 
 Usage
 -----
-1. [Apply the plugin](https://plugins.gradle.org/plugin/baseline.launch-config)
+1. [Apply the plugin](https://plugins.gradle.org/plugin/com.palantir.launch-config)
 2. Call the respective IDE commands (i.e. `./gradlew idea` or `./gradlew eclipse`)
 3. Optional. You can add the `launchConfig` block to specify the `JavaExec` tasks to be used to generate the `.launch`
 files for Eclipse and run configurations for IntelliJ.

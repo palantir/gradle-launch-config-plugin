@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package baseline.launchconfig
+package com.palantir.launchconfig
 
 import groovy.xml.MarkupBuilder
 import java.nio.file.Files

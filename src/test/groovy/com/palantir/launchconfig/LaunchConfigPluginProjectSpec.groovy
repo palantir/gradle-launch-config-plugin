@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package baseline.launchconfig
+package com.palantir.launchconfig
 
 import nebula.test.PluginProjectSpec
 
@@ -22,7 +22,7 @@ class LaunchConfigPluginProjectSpec extends PluginProjectSpec {
 
     @Override
     String getPluginName() {
-        return "baseline.launch-config"
+        return "com.palantir.launch-config"
     }
 
     def "'eclipse' task depends on 'EclipseLaunchConfigTask' if 'eclipse' plugin applied"() {
