@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package baseline.launchconfig
+package com.palantir.launchconfig
 
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
@@ -40,7 +40,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -93,7 +93,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -119,7 +119,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -146,7 +146,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -176,7 +176,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -211,7 +211,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -246,7 +246,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -295,7 +295,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -325,7 +325,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'eclipse'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath

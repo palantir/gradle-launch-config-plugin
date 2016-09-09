@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package baseline.launchconfig
+package com.palantir.launchconfig
 
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
@@ -40,7 +40,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'idea'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -82,7 +82,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'idea'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -120,7 +120,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'idea'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -162,7 +162,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'idea'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -204,7 +204,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         buildFile << """
             apply plugin: 'java'
             apply plugin: 'idea'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath
@@ -260,7 +260,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         addSubproject(subProjectName, """
             apply plugin: 'java'
             apply plugin: 'idea'
-            apply plugin: 'baseline.launch-config'
+            apply plugin: 'com.palantir.launch-config'
 
             task runDev(type: JavaExec) {
                 classpath project.sourceSets.main.runtimeClasspath

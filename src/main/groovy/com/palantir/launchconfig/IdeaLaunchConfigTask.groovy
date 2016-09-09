@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package baseline.launchconfig
+package com.palantir.launchconfig
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.JavaExec
