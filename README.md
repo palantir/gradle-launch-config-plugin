@@ -1,6 +1,6 @@
 gradle-launch-config-plugin
 ===========================
-[![Circle CI](https://circleci.com/gh/palantir-baseline/gradle-launch-config-plugin.svg?style=shield)](https://circleci.com/gh/palantir-baseline/gradle-launch-config-plugin)
+[![CircleCI](https://circleci.com/gh/palantir/gradle-launch-config-plugin.svg?style=svg)](https://circleci.com/gh/palantir/gradle-launch-config-plugin)
 [ ![Download](https://api.bintray.com/packages/palantir/releases/gradle-launch-config-plugin/images/download.svg) ](https://bintray.com/palantir/releases/gradle-launch-config-plugin/_latestVersion)
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/palantir-baseline/gradle-launch-config-plugin/develop/LICENSE)
 
