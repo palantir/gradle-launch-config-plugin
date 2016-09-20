@@ -46,8 +46,10 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 classpath project.sourceSets.main.runtimeClasspath
                 main '${main}'
                 args('server', 'dev/conf/server.yml')
-                jvmArgs('-server', '-client', '-Ddw.assets', '-Ddw.abc=123')
+                jvmArgs('-server', '-client')
                 workingDir '/'
+                systemProperties['dw.assets'] = null
+                systemProperties['dw.abc'] = 123
             }
         """.stripIndent()
 
