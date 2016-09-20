@@ -62,8 +62,8 @@ class IdeaLaunchConfigTask extends DefaultTask {
         runManager.appendNode('configuration', [default: 'false', name: determineRunConfigName(javaExec), type: 'Application', factoryName: 'Application'], [
                 new Node(null, 'extension', [name: 'coverage', enabled: 'false', merge: 'false', runner: 'idea']),
                 new Node(null, 'option', [name: 'MAIN_CLASS_NAME', value: javaExec.main]),
-                new Node(null, 'option', [name: 'VM_PARAMETERS', value: javaExec.allJvmArgs.join(" ")]),
-                new Node(null, 'option', [name: 'PROGRAM_PARAMETERS', value: javaExec.args.join(" ")]),
+                new Node(null, 'option', [name: 'VM_PARAMETERS', value: buildVmParams(javaExec).join(' ')]),
+                new Node(null, 'option', [name: 'PROGRAM_PARAMETERS', value: javaExec.args.join(' ')]),
                 new Node(null, 'option', [name: 'WORKING_DIRECTORY', value: javaExec.workingDir]),
                 new Node(null, 'option', [name: 'ALTERNATIVE_JRE_PATH_ENABLED', value: 'false']),
                 new Node(null, 'option', [name: 'ALTERNATIVE_JRE_PATH', value: '']),
@@ -74,6 +74,16 @@ class IdeaLaunchConfigTask extends DefaultTask {
                 new Node(null, 'envs'),
                 new Node(null, 'method')
         ])
+    }
+
+    /**
+     * Build the VM Params from the JVM Args and the System Properties.
+     */
+    private List<String> buildVmParams(JavaExec javaExec) {
+        List<String> vmParams = new ArrayList<String>()
+        vmParams.addAll(javaExec.jvmArgs)
+        javaExec.systemProperties.each() { k, v -> vmParams.add("-D${k}${v ? '=' + v : ''}") }
+        return vmParams
     }
 
     String determineRunConfigName(JavaExec javaExec) {
