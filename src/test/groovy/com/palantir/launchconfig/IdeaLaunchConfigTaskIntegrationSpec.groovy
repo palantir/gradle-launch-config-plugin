@@ -46,8 +46,10 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 classpath project.sourceSets.main.runtimeClasspath
                 main '${main}'
                 args('server', 'dev/conf/server.yml')
-                jvmArgs('-server', '-client', '-Ddw.assets')
+                jvmArgs('-server', '-client')
                 workingDir '/'
+                systemProperties['dw.assets'] = null
+                systemProperties['dw.abc'] = 123
             }
         """.stripIndent()
 
@@ -68,8 +70,10 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         runConfig != null
 
         runConfig.option.any { it.@name == "MAIN_CLASS_NAME" && it.@value == main }
-        runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().indexOf("-server -client") > -1 }
-        runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().indexOf("-Ddw.assets") > -1 }
+        runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-server -client") }
+        runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-Ddw.assets") }
+        runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-Ddw.abc=123") }
+        runConfig.option.any { it.@name == "VM_PARAMETERS" && !it.@value.toString().contains("com.palantir.launchconfig") }
         runConfig.option.any { it.@name == "PROGRAM_PARAMETERS" && it.@value == "server dev/conf/server.yml" }
         runConfig.option.any { it.@name == "WORKING_DIRECTORY" && it.@value == "/" }
         runConfig.module.any { it.@name == this.projectName }
