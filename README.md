@@ -19,7 +19,7 @@ Usage
         }
       }
       dependencies {
-        classpath "gradle.plugin.com.palantir:gradle-launch-config-plugin:0.4.1"
+        classpath "com.palantir.launchconfig:gradle-launch-config-plugin:<LaunchConfigVersion>"
       }
     }
 
@@ -30,7 +30,7 @@ Usage
 
     ```
     plugins {
-      id "com.palantir.launch-config" version "0.4.1"
+      id "com.palantir.launch-config" version "<LaunchConfigVersion>"
     }
     ```
 2. Call the respective IDE commands (i.e. `./gradlew idea` or `./gradlew eclipse`)
