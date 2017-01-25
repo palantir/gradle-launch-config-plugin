@@ -58,11 +58,6 @@ The tasks are only added if their matching IDE plugin is applied.
 - `cleanEclipseLaunchConfig` - deletes the generated `.launch` files. Triggered when `:cleanEclipseProject` is called.
 - `ideaLaunchConfig` - generates the XML in the IDEA workspace. Triggered when `:ideaWorkspace` is called.
 
-Contributing
-------------
-Before working on the code, if you plan to contribute changes, please read the [CONTRIBUTING](CONTRIBUTING.md) document.
-
-
 License
 -------
 This project is made available under the [Apache 2.0 License][license].
