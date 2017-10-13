@@ -20,6 +20,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskAction
 import org.gradle.plugins.ide.idea.model.IdeaModel
+import org.gradle.plugins.ide.idea.model.IdeaModule
 
 class IdeaLaunchConfigTask extends DefaultTask {
 
@@ -28,10 +29,17 @@ class IdeaLaunchConfigTask extends DefaultTask {
     @TaskAction
     void generate() {
         IdeaModel ideaRootModel = project.rootProject.extensions.findByType(IdeaModel)
-        if (!ideaRootModel) {
+        if (ideaRootModel == null) {
             logger.debug("Could not find the root project's IdeaModel.")
             return
         }
+
+        IdeaModel ideaModel = project.extensions.findByType(IdeaModel)
+        if (ideaModel == null) {
+            logger.debug("Could not find the project's idea module.")
+            return
+        }
+        IdeaModule ideaModule = ideaModel.module
 
         ideaRootModel.workspace.iws.withXml { xmlProvider ->
             Node runManager = xmlProvider.asNode().component.find { it.@name == "RunManager" }
@@ -41,15 +49,14 @@ class IdeaLaunchConfigTask extends DefaultTask {
             }
 
             project.tasks.withType(JavaExec) { javaExec ->
-
                 if (shouldGenerate(javaExec.name)) {
-                    String runConfigName = determineRunConfigName(javaExec)
+                    String runConfigName = determineRunConfigName(ideaModule, javaExec)
 
                     if (runManager.find { it.@name == runConfigName }) {
                         logger.debug("Skipping generation of {} since it already exists.", runConfigName)
                     } else {
                         logger.debug("Generating run configuration for {}.", runConfigName)
-                        appendRunConfig(runManager, javaExec)
+                        appendRunConfig(ideaModule, runManager, javaExec)
                     }
                 } else {
                     logger.debug("Skipping generation of {} since it is excluded in the launchConfig.", javaExec.name)
@@ -58,8 +65,8 @@ class IdeaLaunchConfigTask extends DefaultTask {
         }
     }
 
-    void appendRunConfig(Node runManager, JavaExec javaExec) {
-        runManager.appendNode('configuration', [default: 'false', name: determineRunConfigName(javaExec), type: 'Application', factoryName: 'Application'], [
+    void appendRunConfig(IdeaModule module, Node runManager, JavaExec javaExec) {
+        runManager.appendNode('configuration', [default: 'false', name: determineRunConfigName(module, javaExec), type: 'Application', factoryName: 'Application'], [
                 new Node(null, 'extension', [name: 'coverage', enabled: 'false', merge: 'false', runner: 'idea']),
                 new Node(null, 'option', [name: 'MAIN_CLASS_NAME', value: javaExec.main]),
                 new Node(null, 'option', [name: 'VM_PARAMETERS', value: buildVmParams(javaExec).join(' ')]),
@@ -70,7 +77,7 @@ class IdeaLaunchConfigTask extends DefaultTask {
                 new Node(null, 'option', [name: 'ENABLE_SWING_INSPECTOR', value: 'false']),
                 new Node(null, 'option', [name: 'ENV_VARIABLES']),
                 new Node(null, 'option', [name: 'PASS_PARENT_ENVS', value: 'true']),
-                new Node(null, 'module', [name: project.name]),
+                new Node(null, 'module', [name: module.name]),
                 new Node(null, 'envs'),
                 new Node(null, 'method')
         ])
@@ -86,8 +93,8 @@ class IdeaLaunchConfigTask extends DefaultTask {
         return vmParams
     }
 
-    String determineRunConfigName(JavaExec javaExec) {
-        return "${project.name}-${javaExec.name}"
+    String determineRunConfigName(IdeaModule module, JavaExec javaExec) {
+        return "${module.name}-${javaExec.name}"
     }
 
     boolean shouldGenerate(String taskName) {
