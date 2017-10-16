@@ -298,4 +298,48 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         runManager.configuration.any { it.@name == "${subProjectName}-runDev" }
         runManager.configuration.any { it.@name == "${subProjectName}-otherRun" }
     }
+
+    def "idea works with sub projects with the same name"() {
+        setup:
+        writeHelloWorld("com.testing")
+
+        addSubproject(projectName, """
+            apply plugin: 'java'
+            apply plugin: 'idea'
+            apply plugin: 'com.palantir.launch-config'
+
+            task runDev(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+            task otherRun(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main 'com.testing.HelloWorld'
+            }
+
+        """.stripIndent())
+
+        buildFile << """
+            apply plugin: 'idea'
+        """.stripIndent()
+
+        when:
+        ExecutionResult result = runTasksSuccessfully("idea")
+
+        then:
+        result.success
+
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        def subprojectIdeaModelName = "${projectName}-${projectName}"
+
+        runManager.configuration.any { it.@name == "${subprojectIdeaModelName}-runDev" }
+        runManager.configuration.any { it.@name == "${subprojectIdeaModelName}-otherRun" }
+    }
 }
