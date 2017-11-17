@@ -7,7 +7,7 @@ buildscript {
     dependencies {
         classpath "com.gradle.publish:plugin-publish-plugin:${pluginPublishVersion}"
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${bintrayVersion}"
-        classpath "com.netflix.nebula:nebula-publishing-plugin:${nebulaPublishingVersion}"
+        classpath 'com.netflix.nebula:nebula-publishing-plugin:5.1.4'
         classpath "com.netflix.nebula:gradle-info-plugin:${nebulaInfoVersion}"
         classpath "gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:${gitVersionVersion}"
     }
