@@ -48,6 +48,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 args('server', 'dev/conf/server.yml')
                 jvmArgs('-server', '-client', '-Ddw.assets')
                 workingDir '/'
+                maxHeapSize '4g'
                 systemProperties['dw.abc'] = 123
             }
         """.stripIndent()
@@ -80,6 +81,10 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         xml.stringAttribute.any {
             it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value.toString().indexOf("-Ddw.abc=123") > -1
+        }
+
+        xml.stringAttribute.any {
+            it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value.toString().indexOf("-Xmx4g") > -1
         }
 
         xml.stringAttribute.any {

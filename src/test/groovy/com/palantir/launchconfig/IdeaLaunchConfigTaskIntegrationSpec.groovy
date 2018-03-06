@@ -48,6 +48,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 args('server', 'dev/conf/server.yml')
                 jvmArgs('-server', '-client')
                 workingDir '/'
+                maxHeapSize '4g'
                 systemProperties['dw.assets'] = null
                 systemProperties['dw.abc'] = 123
             }
@@ -74,6 +75,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-Ddw.assets") }
         runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-Ddw.abc=123") }
         runConfig.option.any { it.@name == "VM_PARAMETERS" && !it.@value.toString().contains("com.palantir.launchconfig") }
+        runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-Xmx4g") }
         runConfig.option.any { it.@name == "PROGRAM_PARAMETERS" && it.@value == "server dev/conf/server.yml" }
         runConfig.option.any { it.@name == "WORKING_DIRECTORY" && it.@value == "/" }
         runConfig.module.any { it.@name == this.projectName }
