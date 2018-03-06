@@ -90,6 +90,9 @@ class IdeaLaunchConfigTask extends DefaultTask {
         List<String> vmParams = new ArrayList<String>()
         vmParams.addAll(javaExec.jvmArgs)
         javaExec.systemProperties.each() { k, v -> vmParams.add("-D${k}${v ? '=' + v : ''}") }
+        if (javaExec.enableAssertions) vmParams.add("-ea")
+        if (javaExec.minHeapSize != null) vmParams.add("-Xms${javaExec.minHeapSize}")
+        if (javaExec.maxHeapSize != null) vmParams.add("-Xmx${javaExec.maxHeapSize}")
         return vmParams
     }
 
