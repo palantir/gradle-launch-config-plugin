@@ -82,6 +82,13 @@ class EclipseLaunchConfigTask extends DefaultTask {
                         key: "org.eclipse.jdt.launching.WORKING_DIRECTORY",
                         value: javaExec.workingDir)
             }
+
+            mapAttribute(
+                    key: "org.eclipse.debug.core.environmentVariables") {
+                LaunchConfigPlugin.filterEnvVars(javaExec.environment).each {
+                    mapEntry(key: it.key, value: it.value)
+                }
+            }
         }
 
         Path launchFile = Paths.get("${project.projectDir}/${project.name}-${javaExec.name}.launch")
@@ -106,8 +113,8 @@ class EclipseLaunchConfigTask extends DefaultTask {
 
     boolean shouldGenerate(String taskName) {
         LaunchConfigExtension extension = this.project.extensions.getByType(LaunchConfigExtension)
-        Set<List> includedTasks = extension.getIncludedTasks()
-        Set<List> excludedTasks = extension.getExcludedTasks()
+        Set<String> includedTasks = extension.getIncludedTasks()
+        Set<String> excludedTasks = extension.getExcludedTasks()
 
         // 1. if includeTasks is empty, all tasks are included
         // 2. if includeTasks is not empty, only the specified tasks are included

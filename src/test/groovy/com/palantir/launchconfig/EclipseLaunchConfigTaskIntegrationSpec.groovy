@@ -49,6 +49,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 jvmArgs('-server', '-client', '-Ddw.assets')
                 workingDir '/'
                 maxHeapSize '4g'
+                environment['dw.env'] = 'defg'
                 systemProperties['dw.abc'] = 123
             }
         """.stripIndent()
@@ -93,6 +94,10 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         xml.stringAttribute.any {
             it.@key == "org.eclipse.jdt.launching.WORKING_DIRECTORY" && it.@value == "/"
+        }
+
+        xml.mapAttribute.any {
+            it.@key == "org.eclipse.debug.core.environmentVariables" && it.mapEntry.any { it.@name == "dw.env" && it.@value == "defg" }
         }
     }
 
