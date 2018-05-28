@@ -57,4 +57,23 @@ class LaunchConfigPlugin implements Plugin<Project> {
             project.rootProject.tasks.getByName("ideaWorkspace").dependsOn.add(ideaTask)
         }
     }
+
+    /**
+     * Filters the environment variables that match a system environment
+     * variable, so that only overridden environment variables will be present
+     * in the filtered map.
+     *
+     * @param env The env variables to filter
+     * @return The filtered env variables
+     */
+    protected static Map<String, Object> filterEnvVars(Map<String, Object> env) {
+        def systemVars = System.getenv()
+        def newVars = [:]
+        env.each {
+            if (systemVars[it.key] == null || systemVars[it.key] != it.value.toString()) {
+                newVars[it.key] = it.value
+            }
+        }
+        return newVars
+    }
 }

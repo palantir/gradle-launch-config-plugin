@@ -78,9 +78,17 @@ class IdeaLaunchConfigTask extends DefaultTask {
                 new Node(null, 'option', [name: 'ENV_VARIABLES']),
                 new Node(null, 'option', [name: 'PASS_PARENT_ENVS', value: 'true']),
                 new Node(null, 'module', [name: module.name]),
-                new Node(null, 'envs'),
+                buildEnvVars(javaExec),
                 new Node(null, 'method')
         ])
+    }
+
+    private static Node buildEnvVars(JavaExec javaExec) {
+        def envsNode = new Node(null, 'envs')
+        LaunchConfigPlugin.filterEnvVars(javaExec.environment).each {
+            envsNode.append(new Node(null, 'env', [name: it.key, value: it.value]))
+        }
+        return envsNode
     }
 
     /**
@@ -99,8 +107,8 @@ class IdeaLaunchConfigTask extends DefaultTask {
 
     boolean shouldGenerate(String taskName) {
         LaunchConfigExtension extension = this.project.extensions.getByType(LaunchConfigExtension)
-        Set<List> includedTasks = extension.getIncludedTasks()
-        Set<List> excludedTasks = extension.getExcludedTasks()
+        Set<String> includedTasks = extension.getIncludedTasks()
+        Set<String> excludedTasks = extension.getExcludedTasks()
 
         // 1. if includeTasks is empty, all tasks are included
         // 2. if includeTasks is not empty, only the specified tasks are included
