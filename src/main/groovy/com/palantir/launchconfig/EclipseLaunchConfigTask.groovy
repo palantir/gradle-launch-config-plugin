@@ -71,7 +71,7 @@ class EclipseLaunchConfigTask extends DefaultTask {
 
             stringAttribute(
                     key: "org.eclipse.jdt.launching.VM_ARGUMENTS",
-                    value: javaExec.allJvmArgs.join(" "))
+                    value: buildVmParams(javaExec).join(" "))
 
             stringAttribute(
                     key: "org.eclipse.jdt.launching.PROJECT_ATTR",
@@ -87,6 +87,21 @@ class EclipseLaunchConfigTask extends DefaultTask {
         Path launchFile = Paths.get("${project.projectDir}/${project.name}-${javaExec.name}.launch")
         String xmlString = writer.toString() + "\n"
         Files.write(launchFile, xmlString.getBytes("UTF-8")).toFile()
+    }
+
+    /**
+     * Build the VM Params from the JVM Args and the System Properties.
+     *
+     * Note: this needs to be left as "protected" to avoid scoping issues above
+     */
+    protected List<String> buildVmParams(JavaExec javaExec) {
+        List<String> vmParams = new ArrayList<String>()
+        vmParams.addAll(javaExec.jvmArgs)
+        javaExec.systemProperties.each() { k, v -> vmParams.add("-D${k}${v ? '=' + v : ''}") }
+        if (javaExec.enableAssertions) vmParams.add("-ea")
+        if (javaExec.minHeapSize != null) vmParams.add("-Xms${javaExec.minHeapSize}")
+        if (javaExec.maxHeapSize != null) vmParams.add("-Xmx${javaExec.maxHeapSize}")
+        return vmParams
     }
 
     boolean shouldGenerate(String taskName) {

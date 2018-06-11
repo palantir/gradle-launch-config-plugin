@@ -48,6 +48,8 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 args('server', 'dev/conf/server.yml')
                 jvmArgs('-server', '-client', '-Ddw.assets')
                 workingDir '/'
+                maxHeapSize '4g'
+                systemProperties['dw.abc'] = 123
             }
         """.stripIndent()
 
@@ -75,6 +77,14 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         xml.stringAttribute.any {
             it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value.toString().indexOf("-Ddw.assets") > -1
+        }
+
+        xml.stringAttribute.any {
+            it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value.toString().indexOf("-Ddw.abc=123") > -1
+        }
+
+        xml.stringAttribute.any {
+            it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value.toString().indexOf("-Xmx4g") > -1
         }
 
         xml.stringAttribute.any {
@@ -346,5 +356,41 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         !fileExists("${projectName}-runDev.launch")
         !fileExists("${projectName}-otherRun.launch")
+    }
+
+    def "generates launch files including 'recognized' values"() {
+        setup:
+        writeHelloWorld("com.testing")
+        String main = "com.testing.HelloWorld"
+        buildFile << """
+            apply plugin: 'java'
+            apply plugin: 'eclipse'
+            apply plugin: 'com.palantir.launch-config'
+
+            task runDev(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main '${main}'
+                jvmArgs('-server', '-client', '-ea', '-Xmx4g', '-Xms2g')
+            }
+        """.stripIndent()
+
+        when:
+        ExecutionResult result = runTasksSuccessfully("eclipse")
+
+        then:
+        result.success
+
+        String launchFilename = "${projectName}-runDev.launch"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+
+        xml.stringAttribute.any {
+            it.@key == "org.eclipse.jdt.launching.MAIN_TYPE" && it.@value == main
+        }
+
+        xml.stringAttribute.any {
+            it.@key == "org.eclipse.jdt.launching.VM_ARGUMENTS" && it.@value.toString().indexOf("-server -client -ea -Xms2g -Xmx4g") > -1
+        }
     }
 }

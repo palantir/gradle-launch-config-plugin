@@ -48,6 +48,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
                 args('server', 'dev/conf/server.yml')
                 jvmArgs('-server', '-client')
                 workingDir '/'
+                maxHeapSize '4g'
                 systemProperties['dw.assets'] = null
                 systemProperties['dw.abc'] = 123
             }
@@ -74,6 +75,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-Ddw.assets") }
         runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-Ddw.abc=123") }
         runConfig.option.any { it.@name == "VM_PARAMETERS" && !it.@value.toString().contains("com.palantir.launchconfig") }
+        runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-Xmx4g") }
         runConfig.option.any { it.@name == "PROGRAM_PARAMETERS" && it.@value == "server dev/conf/server.yml" }
         runConfig.option.any { it.@name == "WORKING_DIRECTORY" && it.@value == "/" }
         runConfig.module.any { it.@name == this.projectName }
@@ -341,5 +343,42 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
         runManager.configuration.any { it.@name == "${subprojectIdeaModelName}-runDev" }
         runManager.configuration.any { it.@name == "${subprojectIdeaModelName}-otherRun" }
+    }
+
+    def "generates launch files including 'recognized' values"() {
+        setup:
+        writeHelloWorld("com.testing")
+        String main = "com.testing.HelloWorld"
+        buildFile << """
+            apply plugin: 'java'
+            apply plugin: 'idea'
+            apply plugin: 'com.palantir.launch-config'
+
+            task runDev(type: JavaExec) {
+                classpath project.sourceSets.main.runtimeClasspath
+                main '${main}'
+                jvmArgs('-server', '-client', '-ea', '-Xmx4g', '-Xms2g')
+            }
+        """.stripIndent()
+
+        when:
+        ExecutionResult result = runTasksSuccessfully("idea")
+
+        then:
+        result.success
+
+        String launchFilename = "${projectName}.iws"
+        fileExists(launchFilename)
+
+        def xml = new XmlSlurper().parseText(file(launchFilename).text)
+        def runManager = xml.component.findResult { it.@name == "RunManager" ? it : null }
+        runManager != null
+
+        def runConfig = runManager.configuration.findResult { it.@name == "${projectName}-runDev" ? it : null }
+        runConfig != null
+
+        runConfig.option.any { it.@name == "MAIN_CLASS_NAME" && it.@value == main }
+        runConfig.option.any { it.@name == "VM_PARAMETERS" && it.@value.toString().contains("-server -client -ea -Xms2g -Xmx4g") }
+        runConfig.module.any { it.@name == this.projectName }
     }
 }
