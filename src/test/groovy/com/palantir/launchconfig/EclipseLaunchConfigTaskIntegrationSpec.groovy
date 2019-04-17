@@ -97,7 +97,7 @@ class EclipseLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         }
 
         xml.mapAttribute.any {
-            it.@key == "org.eclipse.debug.core.environmentVariables" && it.mapEntry.any { it.@name == "dw.env" && it.@value == "defg" }
+            it.@key == "org.eclipse.debug.core.environmentVariables" && it.mapEntry.any { it.@key == "dw.env" && it.@value == "defg" }
         }
     }
 
