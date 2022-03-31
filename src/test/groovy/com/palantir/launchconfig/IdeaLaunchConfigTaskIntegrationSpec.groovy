@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Palantir Technologies
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * <http://www.apache.org/licenses/LICENSE-2.0>
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,19 +18,13 @@ package com.palantir.launchconfig
 
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
-import org.junit.Rule
-import org.junit.rules.TestName
 
 class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
 
-    @Rule
-    TestName testName = new TestName()
     String projectName
 
     def setup() {
-        this.projectName = testName.methodName
-                .replaceAll("'", "")
-                .replaceAll(" ", "-")
+        this.projectName = getModuleName()
     }
 
     def "generates launch files from a fully customized JavaExec"() {
@@ -55,7 +49,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("idea")
+        ExecutionResult result = runTasksSuccessfully("-DignoreDeprecations=true", "idea")
 
         then:
         result.success
@@ -103,7 +97,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("idea")
+        ExecutionResult result = runTasksSuccessfully("-DignoreDeprecations=true", "idea")
 
         then:
         result.success
@@ -145,7 +139,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("idea")
+        ExecutionResult result = runTasksSuccessfully("-DignoreDeprecations=true", "idea")
 
         then:
         result.success
@@ -187,7 +181,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("idea")
+        ExecutionResult result = runTasksSuccessfully("-DignoreDeprecations=true", "idea")
 
         then:
         result.success
@@ -240,7 +234,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("idea")
+        ExecutionResult result = runTasksSuccessfully("-DignoreDeprecations=true", "idea")
 
         then:
         result.success
@@ -285,7 +279,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("idea")
+        ExecutionResult result = runTasksSuccessfully("-DignoreDeprecations=true", "idea")
 
         then:
         result.success
@@ -327,7 +321,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("idea")
+        ExecutionResult result = runTasksSuccessfully("-DignoreDeprecations=true", "idea")
 
         then:
         result.success
@@ -362,7 +356,7 @@ class IdeaLaunchConfigTaskIntegrationSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully("idea")
+        ExecutionResult result = runTasksSuccessfully("-DignoreDeprecations=true", "idea")
 
         then:
         result.success
