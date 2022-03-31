@@ -14,10 +14,10 @@ bintray {
         name = 'gradle-launch-config-plugin'
         userOrg = 'palantir'
         licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/palantir-baseline/gradle-launch-config-plugin'
+        vcsUrl = 'https://github.com/palantir/gradle-launch-config-plugin'
         publications = ['nebula']
 
-        githubRepo = 'palantir-baseline/gradle-launch-config-plugin'
+        githubRepo = 'palantir/gradle-launch-config-plugin'
         githubReleaseNotesFile = 'README.md'
     }
 }
@@ -30,8 +30,8 @@ bintrayUpload.dependsOn 'generatePomFileForNebulaPublication', 'build'
 
 
 pluginBundle {
-    website = 'https://github.com/palantir-baseline/gradle-launch-config-plugin'
-    vcsUrl = 'https://github.com/palantir-baseline/gradle-launch-config-plugin'
+    website = 'https://github.com/palantir/gradle-launch-config-plugin'
+    vcsUrl = 'https://github.com/palantir/gradle-launch-config-plugin'
     description = 'A Gradle Plugin that creates .launch files for Eclipse and Run Configurations for IntelliJ for your project\'s JavaExec tasks.'
     tags = ['idea', 'eclipse', 'launch', 'run', 'javaexec']
 
