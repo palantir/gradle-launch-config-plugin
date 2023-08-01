@@ -47,6 +47,7 @@ dependencies {
 
 javaVersions {
     libraryTarget = 11
+    runtime = 17
 }
 
 gradlePlugin {
