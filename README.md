@@ -1,3 +1,7 @@
+<p align="right">
+<a href="https://autorelease.general.dmz.palantir.tech/palantir/gradle-launch-config-plugin"><img src="https://img.shields.io/badge/Perform%20an-Autorelease-success.svg" alt="Autorelease"></a>
+</p>
+
 gradle-launch-config-plugin
 ===========================
 [![CircleCI](https://circleci.com/gh/palantir/gradle-launch-config-plugin.svg?style=svg)](https://circleci.com/gh/palantir/gradle-launch-config-plugin)
